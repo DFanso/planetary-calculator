@@ -6,88 +6,57 @@ import BigText from 'ink-big-text';
 
 // ============================================================================
 // PLANET DATA
-// Each planet has:
-//   gravity  - surface gravity in m/s²  (used for weight calculation)
-//   orbit    - orbital period in Earth years (used for age calculation)
-//   fact     - a fun fact shown on the results screen
-//   ascii    - a small ASCII art drawing of the planet
+// gravity  — surface gravity in m/s²      (weight formula)
+// orbit    — orbital period in Earth years (age formula)
+// fact     — fun fact shown on results
+// color    — accent color used for borders / labels
 // ============================================================================
 const PLANETS = [
 	{
-		name: 'Mars',
-		value: 'mars',
+		name:    'Mars',
+		value:   'mars',
 		gravity: 3.71,
-		orbit: 1.88,
-		fact: "Bring a coat — it's about -60°C!",
-		color: 'red',
-		ascii: [
-			'   .-"""-.  ',
-			'  /  O  O  \\',
-			' |   \\___/  |',
-			'  \\ ~~~~~~ / ',
-			'   `------\'  ',
-		],
+		orbit:   1.88,
+		fact:    "Bring a coat - it's about -60C!",
+		color:   'red',
 	},
 	{
-		name: 'Jupiter',
-		value: 'jupiter',
+		name:    'Jupiter',
+		value:   'jupiter',
 		gravity: 24.79,
-		orbit: 11.86,
-		fact: "You're a heavyweight on this gas giant!",
-		color: 'yellow',
-		ascii: [
-			'  .--------. ',
-			' /  ~~~~~~  \\',
-			'|  ~  ()  ~  |',
-			' \\  ~~~~~~  /',
-			'  `--------\' ',
-		],
+		orbit:   11.86,
+		fact:    "You're a heavyweight on this gas giant!",
+		color:   'yellow',
 	},
 	{
-		name: 'Moon',
-		value: 'moon',
+		name:    'Moon',
+		value:   'moon',
 		gravity: 1.62,
-		orbit: 0.074,
-		fact: 'Perfect for giant leaps!',
-		color: 'white',
-		ascii: [
-			'    .----.   ',
-			'   / .--. \\  ',
-			'  | (    ) | ',
-			'   \\ `--\' /  ',
-			'    `----\'   ',
-		],
+		orbit:   0.074,
+		fact:    'Perfect for giant leaps!',
+		color:   'white',
 	},
 	{
-		name: 'Venus',
-		value: 'venus',
+		name:    'Venus',
+		value:   'venus',
 		gravity: 8.87,
-		orbit: 0.61,
-		fact: 'Watch out for the acid rain!',
-		color: 'magenta',
-		ascii: [
-			'   .------.  ',
-			'  /  *  *  \\ ',
-			' | * Venus * |',
-			'  \\  *  *  / ',
-			'   `------\'  ',
-		],
+		orbit:   0.61,
+		fact:    'Watch out for the acid rain!',
+		color:   'magenta',
 	},
 ];
 
 // ============================================================================
 // COMPONENT: BootSequence
-// Displays a series of animated "loading" messages one by one using
-// setTimeout so it feels like a real spaceship computer booting up.
-// Props:
-//   onComplete — called when all messages have been shown
+// Sequentially reveals loading messages with a small delay between each,
+// then calls onComplete so the app moves to the input phase.
 // ============================================================================
 const BootSequence = ({ onComplete }) => {
-	const [shown, setShown] = useState([]);
-	const [index, setIndex] = useState(0);
+	const [shown, setShown]   = useState([]);
+	const [index, setIndex]   = useState(0);
 
 	const lines = [
-		'[ OK ] INITIALIZING ASTRO-CALC 9000...',
+		'[ OK ] INITIALIZING ASTRONEX...',
 		'[ OK ] LOADING PLANETARY DATABASE...',
 		'[ OK ] CONNECTING TO SATELLITE NETWORK...',
 		'[ OK ] CALIBRATING GRAVITY SENSORS...',
@@ -97,12 +66,12 @@ const BootSequence = ({ onComplete }) => {
 	useEffect(() => {
 		if (index < lines.length) {
 			const t = setTimeout(() => {
-				setShown((prev) => [...prev, lines[index]]);
-				setIndex((i) => i + 1);
+				setShown(prev => [...prev, lines[index]]);
+				setIndex(i => i + 1);
 			}, 380);
 			return () => clearTimeout(t);
 		} else {
-			const t = setTimeout(onComplete, 700);
+			const t = setTimeout(onComplete, 600);
 			return () => clearTimeout(t);
 		}
 	}, [index]);
@@ -114,46 +83,42 @@ const BootSequence = ({ onComplete }) => {
 					{line}
 				</Text>
 			))}
-			{index < lines.length && <Text color="yellow">{'▓'.repeat(index + 1)}</Text>}
+			{index < lines.length && (
+				<Text color="yellow">{'▓'.repeat(index + 1)}</Text>
+			)}
 		</Box>
 	);
 };
 
 // ============================================================================
 // COMPONENT: Header
-// Big gradient ASCII title + subtitle box drawn with box-drawing characters.
+// Big gradient "ASTRONEX" title + decorative subtitle box.
 // ============================================================================
 const Header = () => (
 	<Box flexDirection="column" alignItems="center" marginBottom={1}>
 		<Gradient name="teen">
-			<BigText text="ASTRO-CALC" font="block" />
+			<BigText text="ASTRONEX" font="block" />
 		</Gradient>
 		<Text bold color="cyan">{'╔══════════════════════════════════════╗'}</Text>
-		<Text bold color="cyan">{'║        9000  ·  SPACE  EDITION       ║'}</Text>
+		<Text bold color="cyan">{'║        PLANETARY  CALCULATOR         ║'}</Text>
 		<Text bold color="cyan">{'╚══════════════════════════════════════╝'}</Text>
 	</Box>
 );
 
 // ============================================================================
 // COMPONENT: InputPhase
-// Two-step form: first collect age, then weight.
-// Uses ink-text-input which handles raw keyboard input for us.
-// Props:
-//   age, setAge, weight, setWeight — state lifted to App
-//   onComplete — called when both values are valid
+// Two-step form: age first, then weight.
+// ink-text-input handles raw keyboard capture; we just track state here.
 // ============================================================================
 const InputPhase = ({ age, setAge, weight, setWeight, onComplete }) => {
-	// 'age' | 'weight' — which field is currently active
 	const [step, setStep] = useState('age');
 
 	const handleAgeSubmit = (val) => {
-		const n = parseFloat(val);
-		if (!isNaN(n) && n > 0) setStep('weight');
+		if (!isNaN(parseFloat(val)) && parseFloat(val) > 0) setStep('weight');
 	};
 
 	const handleWeightSubmit = (val) => {
-		const n = parseFloat(val);
-		if (!isNaN(n) && n > 0) onComplete();
+		if (!isNaN(parseFloat(val)) && parseFloat(val) > 0) onComplete();
 	};
 
 	return (
@@ -162,11 +127,11 @@ const InputPhase = ({ age, setAge, weight, setWeight, onComplete }) => {
 			<Text bold color="yellow">  MISSION DATA ENTRY</Text>
 			<Text bold color="magenta">{'━'.repeat(42)}</Text>
 
-			{/* ── Age input ───────────────────────────────── */}
+			{/* Age field */}
 			<Box flexDirection="column">
 				<Text color={step === 'age' ? 'green' : 'gray'}>
 					{step === 'age' ? '▸' : '✓'} Earth Age (years):
-					{step !== 'age' && <Text color="white"> {age}</Text>}
+					{step !== 'age' && <Text color="white">  {age}</Text>}
 				</Text>
 				{step === 'age' && (
 					<Box>
@@ -181,9 +146,9 @@ const InputPhase = ({ age, setAge, weight, setWeight, onComplete }) => {
 				)}
 			</Box>
 
-			{/* ── Weight input ─────────────────────────────── */}
+			{/* Weight field */}
 			<Box flexDirection="column">
-				<Text color={step === 'weight' ? 'green' : step === 'age' ? 'gray' : 'gray'}>
+				<Text color={step === 'weight' ? 'green' : 'gray'}>
 					{step === 'weight' ? '▸' : '○'} Earth Weight (kg):
 				</Text>
 				{step === 'weight' && (
@@ -204,21 +169,17 @@ const InputPhase = ({ age, setAge, weight, setWeight, onComplete }) => {
 
 // ============================================================================
 // COMPONENT: PlanetList
-// Shows all planets with ASCII art. Arrow keys / j/k move the selection,
-// ENTER confirms. The highlighted planet gets a bold green border.
-// Props:
-//   onSelect(planet) — called when user confirms a planet
+// Shows each planet with ASCII art beside the name.
+// Arrow keys / j/k navigate, ENTER or 1-4 selects.
 // ============================================================================
 const PlanetList = ({ onSelect }) => {
 	const [idx, setIdx] = useState(0);
 
-	// useInput is the correct ink hook for keyboard input — it requires
-	// raw mode which our patched stdin in index.js enables permanently.
 	useInput((input, key) => {
 		if (key.upArrow || input === 'k') {
-			setIdx((prev) => (prev === 0 ? PLANETS.length - 1 : prev - 1));
+			setIdx(prev => (prev === 0 ? PLANETS.length - 1 : prev - 1));
 		} else if (key.downArrow || input === 'j') {
-			setIdx((prev) => (prev === PLANETS.length - 1 ? 0 : prev + 1));
+			setIdx(prev => (prev === PLANETS.length - 1 ? 0 : prev + 1));
 		} else if (key.return) {
 			onSelect(PLANETS[idx]);
 		} else if (['1', '2', '3', '4'].includes(input)) {
@@ -230,40 +191,39 @@ const PlanetList = ({ onSelect }) => {
 
 	return (
 		<Box flexDirection="column" paddingLeft={2} gap={1}>
-			<Text bold color="magenta">{'━'.repeat(42)}</Text>
-			<Text bold color="yellow">  SELECT DESTINATION PLANET</Text>
-			<Text color="cyan">  ↑ ↓  or  j / k  to move  ·  ENTER to confirm  ·  1-4 to pick instantly</Text>
-			<Text bold color="magenta">{'━'.repeat(42)}</Text>
+			<Text bold color="magenta">{'━'.repeat(50)}</Text>
+			<Text bold color="yellow">  SELECT YOUR DESTINATION PLANET</Text>
+			<Text color="cyan">  ↑ ↓  or  j / k  to navigate  ·  ENTER to confirm  ·  1-4 quick-pick</Text>
+			<Text bold color="magenta">{'━'.repeat(50)}</Text>
 
 			{PLANETS.map((planet, i) => {
 				const selected = i === idx;
+
 				return (
 					<Box
 						key={planet.value}
 						flexDirection="row"
 						borderStyle={selected ? 'bold' : 'single'}
-						borderColor={selected ? 'green' : 'gray'}
+						borderColor={selected ? planet.color : 'gray'}
 						paddingX={1}
 						marginBottom={0}
 					>
-						{/* Left: selector + name */}
-						<Box flexDirection="column" width={16} justifyContent="center">
-							<Text color={selected ? 'green' : 'white'} bold={selected}>
+						{/* Planet info panel */}
+						<Box flexDirection="column" justifyContent="center" paddingRight={2} width={20}>
+							<Text color={selected ? planet.color : 'white'} bold={selected}>
 								{selected ? '► ' : '  '}{i + 1}. {planet.name}
 							</Text>
+							<Text color="gray">  Gravity: {planet.gravity} m/s²</Text>
+							<Text color="gray">  Orbit:   {planet.orbit} Earth years</Text>
 							{selected && (
-								<Text color="green" dimColor>
-									{'  press ENTER'}
-								</Text>
+								<Text color="green" dimColor>  ↵ press ENTER to select</Text>
 							)}
 						</Box>
 
-						{/* Right: ASCII art */}
-						<Box flexDirection="column">
+						{/* ASCII art */}
+						<Box flexDirection="column" justifyContent="center">
 							{planet.ascii.map((line, li) => (
-								<Text key={li} color={selected ? planet.color : 'gray'}>
-									{line}
-								</Text>
+								<Text key={li} color={selected ? planet.color : 'gray'}>{line}</Text>
 							))}
 						</Box>
 					</Box>
@@ -275,94 +235,88 @@ const PlanetList = ({ onSelect }) => {
 
 // ============================================================================
 // COMPONENT: Results
-// Displays the final mission readout inside a rounded box.
-// Calculations:
-//   weight = (earthWeight / 9.81) * planet.gravity
-//   age    = earthAge / planet.orbit
-// Props:
-//   age, weight — strings from user input
-//   planet      — the selected PLANETS entry
+// Final mission readout with ASCII art on the left and stats on the right.
 // ============================================================================
 const Results = ({ age, weight, planet }) => {
 	const { exit } = useApp();
 
+	// weight formula: (earthWeight / 9.81) * planetGravity
 	const newWeight = ((parseFloat(weight) / 9.81) * planet.gravity).toFixed(2);
-	const newAge    = (parseFloat(age) / planet.orbit).toFixed(2);
+	// age formula: earthAge / planetOrbitalPeriod
+	const newAge    = (parseFloat(age)    / planet.orbit).toFixed(2);
 
-	// Quit on any key press after results are shown
 	useInput((input, key) => {
-		if (key.return || input === 'q' || key.escape) exit();
+		if (key.return || input === 'q' || input === 'Q' || key.escape) exit();
 	});
 
 	return (
 		<Box flexDirection="column" alignItems="center" paddingX={2}>
-			<Text bold color="magenta">{'━'.repeat(44)}</Text>
-			<Text bold color="yellow">      ★  MISSION RESULTS  ★</Text>
-			<Text bold color="magenta">{'━'.repeat(44)}</Text>
+			<Text bold color="magenta">{'━'.repeat(52)}</Text>
+			<Text bold color="yellow">         ★  MISSION RESULTS  ★</Text>
+			<Text bold color="magenta">{'━'.repeat(52)}</Text>
 
-			{/* Main result box */}
-			<Box
-				borderStyle="round"
-				borderColor="cyan"
-				flexDirection="column"
-				paddingX={3}
-				paddingY={1}
-				marginTop={1}
-				width={44}
-			>
-				<Text bold color="white">
-					DESTINATION: <Text color={planet.color} bold>{planet.name.toUpperCase()}</Text>
-				</Text>
+			{/* Two-column layout: ASCII art | stats */}
+			<Box flexDirection="row" marginTop={1} gap={3}>
 
-				<Text>{'─'.repeat(36)}</Text>
+				{/* ASCII art */}
+				<Box flexDirection="column" borderStyle="round" borderColor={planet.color} paddingX={1}>
+					<Text bold color={planet.color}> {planet.name.toUpperCase()} </Text>
+					{planet.ascii.map((line, li) => (
+						<Text key={li} color={planet.color}>{line}</Text>
+					))}
+				</Box>
 
-				<Text color="cyan">
-					{'Earth Age:   '}<Text color="white">{age} years</Text>
-				</Text>
-				<Text color="cyan">
-					{'Age on ' + planet.name + ':  '}<Text color="green" bold>{newAge} years</Text>
-				</Text>
+				{/* Stats panel */}
+				<Box flexDirection="column" justifyContent="center" gap={1}>
+					<Box
+						borderStyle="round"
+						borderColor="cyan"
+						flexDirection="column"
+						paddingX={2}
+						paddingY={1}
+					>
+						<Text bold color="white">MISSION STATS</Text>
+						<Text>{'─'.repeat(28)}</Text>
 
-				<Text>{'─'.repeat(36)}</Text>
+						<Text color="cyan">
+							Earth Age:    <Text color="white">{age} years</Text>
+						</Text>
+						<Text color="cyan">
+							On {planet.name}:      <Text color="green" bold>{newAge} years</Text>
+						</Text>
 
-				<Text color="cyan">
-					{'Earth Weight:'}<Text color="white">  {weight} kg</Text>
-				</Text>
-				<Text color="cyan">
-					{'Weight on ' + planet.name + ':'}<Text color="green" bold>  {newWeight} kg</Text>
-				</Text>
+						<Text>{'─'.repeat(28)}</Text>
+
+						<Text color="cyan">
+							Earth Weight: <Text color="white">{weight} kg</Text>
+						</Text>
+						<Text color="cyan">
+							On {planet.name}:      <Text color="green" bold>{newWeight} kg</Text>
+						</Text>
+					</Box>
+
+					{/* Fun fact */}
+					<Box borderStyle="bold" borderColor="yellow" paddingX={2} paddingY={0}>
+						<Text color="yellow">💡 {planet.fact}</Text>
+					</Box>
+
+					<Text color="green" bold>MISSION COMPLETE! Safe travels, Astronaut!</Text>
+					<Text dimColor>Press ENTER or Q to exit</Text>
+				</Box>
 			</Box>
-
-			{/* Fun fact */}
-			<Box
-				marginTop={1}
-				borderStyle="bold"
-				borderColor="yellow"
-				paddingX={2}
-				paddingY={0}
-				width={44}
-			>
-				<Text color="yellow">💡 {planet.fact}</Text>
-			</Box>
-
-			<Text bold color="green" marginTop={1}>
-				MISSION COMPLETE! Safe travels, Astronaut!
-			</Text>
-			<Text dimColor>Press ENTER or Q to exit</Text>
 		</Box>
 	);
 };
 
 // ============================================================================
 // MAIN COMPONENT: App
-// State machine with four phases:
-//   booting → input → select → results
+// Simple state-machine:  booting → input → select → results
 // ============================================================================
 const App = () => {
-	const [phase, setPhase]               = useState('booting');
-	const [age, setAge]                   = useState('');
-	const [weight, setWeight]             = useState('');
-	const [selectedPlanet, setSelected]   = useState(null);
+	const [phase, setPhase]             = useState('booting');
+	const [age, setAge]                 = useState('');
+	const [weight, setWeight]           = useState('');
+	const [selectedPlanet, setSelected] = useState(null);
 
 	const handlePlanetSelect = (planet) => {
 		setSelected(planet);
@@ -371,7 +325,6 @@ const App = () => {
 
 	return (
 		<Box flexDirection="column" paddingTop={1}>
-			{/* Header is shown on every screen except the boot screen */}
 			{phase !== 'booting' && <Header />}
 
 			{phase === 'booting' && (
@@ -380,10 +333,8 @@ const App = () => {
 
 			{phase === 'input' && (
 				<InputPhase
-					age={age}
-					setAge={setAge}
-					weight={weight}
-					setWeight={setWeight}
+					age={age}       setAge={setAge}
+					weight={weight} setWeight={setWeight}
 					onComplete={() => setPhase('select')}
 				/>
 			)}
@@ -393,7 +344,10 @@ const App = () => {
 			)}
 
 			{phase === 'results' && selectedPlanet && (
-				<Results age={age} weight={weight} planet={selectedPlanet} />
+				<Results
+					age={age} weight={weight}
+					planet={selectedPlanet}
+				/>
 			)}
 		</Box>
 	);

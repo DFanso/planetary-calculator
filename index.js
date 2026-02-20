@@ -1,3 +1,7 @@
+// Force chalk (used internally by terminal-image) to always output
+// true-color ANSI codes regardless of terminal auto-detection.
+process.env.FORCE_COLOR = '3';
+
 import React from 'react';
 import { render } from 'ink';
 import { PassThrough } from 'node:stream';
@@ -47,4 +51,8 @@ process.stdin.on('data', (data) => {
 	stdinProxy.write(data);
 });
 
-render(React.createElement(App), { stdin: stdinProxy, exitOnCtrlC: true });
+// No images - just pass empty object, App uses ASCII art
+render(
+	React.createElement(App, { planetImages: {} }),
+	{ stdin: stdinProxy, exitOnCtrlC: true }
+);
