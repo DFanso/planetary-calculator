@@ -225,9 +225,9 @@ const PlanetList = ({ onSelect }) => {
 // ============================================================================
 // COMPONENT: Results
 // Final mission readout with calculated weight and age.
-// Press ENTER or Q to exit, B to go back to planet selection.
+// Press Q to exit, B to go back to planet selection, R to reset and start over.
 // ============================================================================
-const Results = ({ age, weight, planet, onBack }) => {
+const Results = ({ age, weight, planet, onBack, onReset }) => {
 	const { exit } = useApp();
 
 	// weight formula: (earthWeight / 9.81) * planetGravity
@@ -240,6 +240,8 @@ const Results = ({ age, weight, planet, onBack }) => {
 			exit();
 		} else if (input === 'b' || input === 'B') {
 			onBack();
+		} else if (input === 'r' || input === 'R') {
+			onReset();
 		}
 	});
 
@@ -287,7 +289,7 @@ const Results = ({ age, weight, planet, onBack }) => {
 			</Box>
 
 			<Text bold color="green" marginTop={1}>MISSION COMPLETE! Safe travels, Astronaut!</Text>
-			<Text dimColor>Press Q to exit  |  Press B to go back</Text>
+			<Text dimColor>Press Q to quit  |  B: back to planets  |  R: reset</Text>
 		</Box>
 	);
 };
@@ -309,6 +311,13 @@ const App = () => {
 
 	const handleGoBack = () => {
 		setPhase('select');
+	};
+
+	const handleReset = () => {
+		setAge('');
+		setWeight('');
+		setSelected(null);
+		setPhase('input');
 	};
 
 	return (
@@ -336,6 +345,7 @@ const App = () => {
 					age={age} weight={weight}
 					planet={selectedPlanet}
 					onBack={handleGoBack}
+					onReset={handleReset}
 				/>
 			)}
 		</Box>
