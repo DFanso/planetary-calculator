@@ -10,51 +10,58 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
-    runs-on: ${{ matrix.os }}
-
-    strategy:
-      matrix:
-        os: [macos-latest, ubuntu-latest, windows-latest]
-
+  build-macos:
+    runs-on: macos-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@v2
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
         with:
           bun-version: latest
-
-      - name: Install dependencies
-        run: bun install
-
-      - name: Build executable
-        run: |
-          if [ "${{ matrix.os }}" = "windows-latest" ]; then
-            bun build index.js --compile --outfile astronex.exe
-          else
-            bun build index.js --compile --outfile astronex
-          fi
-
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4
+      - run: bun install
+      - run: bun build index.js --compile --outfile astronex
+      - uses: actions/upload-artifact@v4
         with:
-          name: astronex-${{ matrix.os }}
-          path: astronex*
+          name: astronex-macos
+          path: astronex
+          retention-days: 30
+
+  build-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - run: bun install
+      - run: bun build index.js --compile --outfile astronex
+      - uses: actions/upload-artifact@v4
+        with:
+          name: astronex-linux
+          path: astronex
+          retention-days: 30
+
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - run: bun install
+      - run: bun build index.js --compile --outfile astronex.exe
+      - uses: actions/upload-artifact@v4
+        with:
+          name: astronex-windows
+          path: astronex.exe
           retention-days: 30
 
   release:
-    needs: build
+    needs: [build-macos, build-linux, build-windows]
     if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
-
     steps:
-      - name: Download artifacts
-        uses: actions/download-artifact@v4
-
-      - name: Create Release
-        uses: softprops/action-gh-release@v1
+      - uses: actions/download-artifact@v4
+      - uses: softprops/action-gh-release@v1
         with:
           files: astronex-*
         env:
