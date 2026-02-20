@@ -1,92 +1,88 @@
-# 🚀 ASTRO-CALC 9000 - Planetary Weight & Age Calculator
+# 🚀 ASTRONEX - Planetary Weight & Age Calculator
 
-A fun, interactive terminal application for kids (ages 8-12) to calculate their weight and age on different planets!
+A fun, interactive terminal application for kids to calculate their weight and age on different planets!
+
+![Build](https://github.com/your-username/astronex/actions/workflows/build.yml/badge.svg)
 
 ## Features
 
 - 🌟 Retro spaceship command console interface
-- 🎨 Colorful ASCII art for each planet
+- 🎨 Colorful text and gradients
 - ⌨️ Interactive keyboard navigation
 - 🔢 Real-time weight and age calculations
 - 🎮 Kid-friendly design with fun planet facts
 
-## Prerequisites
+## Download Pre-built Binaries
+
+Go to [Releases](https://github.com/your-username/astronex/releases) to download:
+- `astronex` - macOS executable
+- `astronex` - Linux executable  
+- `astronex.exe` - Windows executable
+
+## Running from Source
+
+### Prerequisites
 
 - [Bun](https://bun.sh) runtime installed
-- Terminal with TTY support (iTerm2, Terminal.app, Windows Terminal, etc.)
+- Terminal with color support
 
-## Installation
+### Quick Start
 
-1. Clone the repository:
-```bash
-git clone <repository-url>
-cd planetary-calculator
-```
-
-2. Install dependencies:
 ```bash
 bun install
-```
-
-## Running the App
-
-### Method 1: Direct Command
-```bash
 bun index.js
-```
-
-### Method 2: Using the Launch Script
-```bash
-./run.sh
-```
-
-### Method 3: Force Demo Mode
-```bash
-bun index.js < /dev/null
 ```
 
 ## How to Use
 
-1. **Boot Sequence**: Watch the cool loading animation
-2. **Enter Your Age**: Type your Earth age in years
-3. **Enter Your Weight**: Type your Earth weight in kilograms
-4. **Select a Planet**: Use arrow keys (↑↓) or j/k to navigate, press ENTER to select
-   - Or press numbers 1-4 for quick selection
-5. **View Results**: See your calculated age and weight on the selected planet!
+1. **Enter your age** - Type your Earth age in years, press ENTER
+2. **Enter your weight** - Type your Earth weight in kg, press ENTER
+3. **Select a planet** - Use arrow keys or j/k, press ENTER
+4. **View results** - See your calculated age and weight!
+
+### Controls
+
+| Key | Action |
+|-----|--------|
+| ↑/↓ or j/k | Navigate planet list |
+| ENTER | Select planet |
+| B | Go back to planets |
+| R | Reset and start over |
+| Q | Quit |
 
 ## Planet Options
 
-- 🔴 **Mars**: The Red Planet (Gravity: 3.71 m/s²)
-- 🟤 **Jupiter**: The Gas Giant (Gravity: 24.79 m/s²)
-- 🌙 **Moon**: Earth's Satellite (Gravity: 1.62 m/s²)
-- 🟡 **Venus**: The Morning Star (Gravity: 8.87 m/s²)
-
-## Demo Mode
-
-When run in environments without keyboard input (like CI/CD or some IDEs), the app automatically runs in demo mode with preset values.
+- **Mars** - Gravity: 3.71 m/s², Orbit: 1.88 years
+- **Jupiter** - Gravity: 24.79 m/s², Orbit: 11.86 years
+- **Moon** - Gravity: 1.62 m/s², Orbit: 0.074 years
+- **Venus** - Gravity: 8.87 m/s², Orbit: 0.61 years
 
 ## Calculations
 
-- **Weight Formula**: `(Earth Weight / 9.81) × Planet Surface Gravity`
-- **Age Formula**: `Earth Age / Planet Orbital Period in Earth Years`
+- **Weight**: `(Earth Weight / 9.81) × Planet Gravity`
+- **Age**: `Earth Age / Planet Orbital Period`
 
-## Troubleshooting
+## Building from Source
 
-### "Raw mode is not supported" Error
-This happens when running in a non-interactive environment. The app will automatically switch to demo mode.
+```bash
+# Install dependencies
+bun install
 
-### No Colors Showing
-Make sure your terminal supports ANSI colors. Most modern terminals do.
+# Run in development
+bun index.js
 
-### Keyboard Not Working
-Ensure you're running in a real terminal, not an IDE's output panel.
+# Build for current platform
+bun build index.js --compile --outfile astronex
+```
 
-## Educational Value
+## GitHub Actions
 
-This app helps students understand:
-- Gravity differences across celestial bodies
-- Orbital periods and their effect on "years"
-- Basic physics concepts in a fun, interactive way
+The project uses GitHub Actions to automatically build binaries for:
+- macOS (x64)
+- Linux (x64)
+- Windows (x64)
+
+Builds are created on every push to main and are available as workflow artifacts or in Releases.
 
 ---
 
