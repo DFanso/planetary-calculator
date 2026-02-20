@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Box, Text, useInput, useApp } from 'ink';
 import TextInput from 'ink-text-input';
 import Gradient from 'ink-gradient';
-import BigText from 'ink-big-text';
 
 // ============================================================================
 // PLANET DATA
@@ -97,7 +96,7 @@ const BootSequence = ({ onComplete }) => {
 const Header = () => (
 	<Box flexDirection="column" alignItems="center" marginBottom={1}>
 		<Gradient name="teen">
-			<BigText text="ASTRONEX" font="block" />
+			<Text bold font="2x">ASTRONEX</Text>
 		</Gradient>
 		<Text bold color="cyan">{'╔══════════════════════════════════════╗'}</Text>
 		<Text bold color="cyan">{'║        PLANETARY  CALCULATOR         ║'}</Text>

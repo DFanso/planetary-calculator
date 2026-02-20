@@ -1,22 +1,27 @@
 {
-  "name": "planetary-calculator",
+  "name": "astronex",
+  "version": "1.0.0",
+  "description": "ASTRONEX - Planetary Weight & Age Calculator for Kids",
   "module": "index.js",
   "type": "module",
+  "bin": {
+    "astronex": "./index.js"
+  },
+  "scripts": {
+    "start": "bun index.js",
+    "build:mac": "bun build index.js --compile --outfile astronex-macos",
+    "build:win": "bun build index.js --compile --outfile astronex.exe --target windows-x64",
+    "build:linux": "bun build index.js --compile --outfile astronex-linux --target linux-x64"
+  },
   "devDependencies": {
     "@types/bun": "latest"
-  },
-  "peerDependencies": {
-    "typescript": "^5.0.0"
   },
   "dependencies": {
     "@inkjs/ui": "^2.0.0",
     "ink": "^6.8.0",
-    "ink-big-text": "^2.0.0",
     "ink-gradient": "^4.0.0",
     "ink-text-input": "^6.0.0",
     "react": "^19.2.4",
-    "react-dom": "^19.2.4",
-    "sharp": "^0.34.5",
-    "terminal-image": "^4.2.0"
+    "react-dom": "^19.2.4"
   }
 }
