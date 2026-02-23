@@ -4,7 +4,7 @@ on:
   push:
     branches: [master]
     tags:
-      - 'v*'
+      - "v*"
   pull_request:
     branches: [master]
   workflow_dispatch:
@@ -18,11 +18,11 @@ jobs:
         with:
           bun-version: latest
       - run: bun install
-      - run: bun build index.js --compile --outfile astronex
+      - run: bun build index.js --compile --outfile astronex-macos
       - uses: actions/upload-artifact@v4
         with:
           name: astronex-macos
-          path: astronex
+          path: astronex-macos
           retention-days: 30
 
   build-linux:
@@ -33,11 +33,11 @@ jobs:
         with:
           bun-version: latest
       - run: bun install
-      - run: bun build index.js --compile --outfile astronex
+      - run: bun build index.js --compile --outfile astronex-linux
       - uses: actions/upload-artifact@v4
         with:
           name: astronex-linux
-          path: astronex
+          path: astronex-linux
           retention-days: 30
 
   build-windows:
@@ -48,19 +48,24 @@ jobs:
         with:
           bun-version: latest
       - run: bun install
-      - run: bun build index.js --compile --outfile astronex.exe
+      - run: bun build index.js --compile --outfile astronex-windows.exe
       - uses: actions/upload-artifact@v4
         with:
           name: astronex-windows
-          path: astronex.exe
+          path: astronex-windows.exe
           retention-days: 30
 
   release:
     needs: [build-macos, build-linux, build-windows]
     if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - uses: actions/download-artifact@v4
+        with:
+          pattern: astronex-*
+          merge-multiple: true
       - uses: softprops/action-gh-release@v1
         with:
           files: astronex-*
