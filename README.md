@@ -2,7 +2,7 @@
 
 A fun, interactive terminal application for kids to calculate their weight and age on different planets!
 
-![Build](https://github.com/your-username/astronex/actions/workflows/build.yml/badge.svg)
+![Build](https://github.com/DFanso/planetary-calculator/actions/workflows/build.yml/badge.svg)
 
 ## Features
 
@@ -14,10 +14,11 @@ A fun, interactive terminal application for kids to calculate their weight and a
 
 ## Download Pre-built Binaries
 
-Go to [Releases](https://github.com/your-username/astronex/releases) to download:
-- `astronex` - macOS executable
-- `astronex` - Linux executable  
-- `astronex.exe` - Windows executable
+Go to [Releases](https://github.com/DFanso/planetary-calculator/releases) to download:
+
+- `astronex-macos` - macOS executable
+- `astronex-linux` - Linux executable
+- `astronex-windows.exe` - Windows executable
 
 ## Running from Source
 
@@ -42,13 +43,13 @@ bun index.js
 
 ### Controls
 
-| Key | Action |
-|-----|--------|
+| Key        | Action               |
+| ---------- | -------------------- |
 | ↑/↓ or j/k | Navigate planet list |
-| ENTER | Select planet |
-| B | Go back to planets |
-| R | Reset and start over |
-| Q | Quit |
+| ENTER      | Select planet        |
+| B          | Go back to planets   |
+| R          | Reset and start over |
+| Q          | Quit                 |
 
 ## Planet Options
 
@@ -78,6 +79,7 @@ bun build index.js --compile --outfile astronex
 ## GitHub Actions
 
 The project uses GitHub Actions to automatically build binaries for:
+
 - macOS (x64)
 - Linux (x64)
 - Windows (x64)

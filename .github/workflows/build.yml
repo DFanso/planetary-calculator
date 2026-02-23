@@ -48,7 +48,8 @@ jobs:
         with:
           bun-version: latest
       - run: bun install
-      - run: bun build index.js --compile --outfile astronex-windows.exe
+      - run: bunx -y png-to-ico logo.png > logo.ico
+      - run: bun build index.js --compile --outfile astronex-windows.exe --windows-icon=logo.ico
       - uses: actions/upload-artifact@v4
         with:
           name: astronex-windows

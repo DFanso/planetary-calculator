@@ -10,8 +10,8 @@
   "scripts": {
     "start": "bun index.js",
     "build:mac": "bun build index.js --compile --outfile astronex-macos",
-    "build:win": "bun build index.js --compile --outfile astronex.exe --target windows-x64",
-    "build:linux": "bun build index.js --compile --outfile astronex-linux --target linux-x64"
+    "build:win": "bun build index.js --compile --outfile astronex.exe --target bun-windows-x64 --windows-icon=logo.ico",
+    "build:linux": "bun build index.js --compile --outfile astronex-linux --target bun-linux-x64"
   },
   "devDependencies": {
     "@types/bun": "latest"
