@@ -11,6 +11,7 @@ A fun, interactive terminal application for kids to calculate their weight and a
 - ⌨️ Interactive keyboard navigation
 - 🔢 Real-time weight and age calculations
 - 🎮 Kid-friendly design with fun planet facts
+- 🦀 Written in Rust — single static binary, ~400 KB
 
 ## Download Pre-built Binaries
 
@@ -24,14 +25,13 @@ Go to [Releases](https://github.com/DFanso/planetary-calculator/releases) to dow
 
 ### Prerequisites
 
-- [Bun](https://bun.sh) runtime installed
-- Terminal with color support
+- [Rust](https://rustup.rs) toolchain (stable)
+- Terminal with true-color support
 
 ### Quick Start
 
 ```bash
-bun install
-bun index.js
+cargo run --release
 ```
 
 ## How to Use
@@ -46,10 +46,12 @@ bun index.js
 | Key        | Action               |
 | ---------- | -------------------- |
 | ↑/↓ or j/k | Navigate planet list |
-| ENTER      | Select planet        |
+| 1–4        | Quick-pick a planet  |
+| ENTER      | Confirm input/select |
 | B          | Go back to planets   |
 | R          | Reset and start over |
 | Q          | Quit                 |
+| Ctrl+C     | Force quit anywhere  |
 
 ## Planet Options
 
@@ -66,26 +68,26 @@ bun index.js
 ## Building from Source
 
 ```bash
-# Install dependencies
-bun install
+# Build release binary (output: target/release/astronex)
+cargo build --release
 
-# Run in development
-bun index.js
+# Run directly
+cargo run --release
 
-# Build for current platform
-bun build index.js --compile --outfile astronex
+# Cross-compile for a specific target
+cargo build --release --target x86_64-pc-windows-msvc
 ```
 
 ## GitHub Actions
 
 The project uses GitHub Actions to automatically build binaries for:
 
-- macOS (x64)
-- Linux (x64)
-- Windows (x64)
+- macOS (x86_64)
+- Linux (x86_64)
+- Windows (x86_64)
 
-Builds are created on every push to main and are available as workflow artifacts or in Releases.
+Builds are created on every push to `master` and are available as workflow artifacts. Tagged pushes (`v*`) also publish to GitHub Releases.
 
 ---
 
-Made with 💚 using [Ink](https://github.com/vadimdemedes/ink) and React for the terminal!
+Made with 💚 using [ratatui](https://ratatui.rs) and [crossterm](https://github.com/crossterm-rs/crossterm) for the terminal!

@@ -1,0 +1,20 @@
+[package]
+name = "astronex"
+version = "1.0.0"
+edition = "2021"
+description = "ASTRONEX — Planetary Weight & Age Calculator"
+authors = ["Leo Gavin"]
+
+[[bin]]
+name = "astronex"
+path = "src/main.rs"
+
+[dependencies]
+ratatui = "0.29"
+crossterm = "0.28"
+
+[profile.release]
+lto = true
+codegen-units = 1
+strip = true
+opt-level = "z"

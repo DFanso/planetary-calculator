@@ -178,3 +178,7 @@ dist
 astronex
 astronex.exe
 astronex-*
+
+# Rust build artifacts
+target/
+**/*.rs.bk

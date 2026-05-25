@@ -9,55 +9,61 @@ on:
     branches: [master]
   workflow_dispatch:
 
+env:
+  CARGO_TERM_COLOR: always
+
 jobs:
-  build-macos:
-    runs-on: macos-latest
+  build:
+    name: Build (${{ matrix.name }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: macos
+            os: macos-latest
+            target: x86_64-apple-darwin
+            artifact: astronex-macos
+            binary: astronex
+          - name: linux
+            os: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+            artifact: astronex-linux
+            binary: astronex
+          - name: windows
+            os: windows-latest
+            target: x86_64-pc-windows-msvc
+            artifact: astronex-windows.exe
+            binary: astronex.exe
     steps:
       - uses: actions/checkout@v4
-      - uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: latest
-      - run: bun install
-      - run: bun build index.js --compile --outfile astronex-macos
-      - uses: actions/upload-artifact@v4
-        with:
-          name: astronex-macos
-          path: astronex-macos
-          retention-days: 30
 
-  build-linux:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: oven-sh/setup-bun@v2
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
         with:
-          bun-version: latest
-      - run: bun install
-      - run: bun build index.js --compile --outfile astronex-linux
-      - uses: actions/upload-artifact@v4
-        with:
-          name: astronex-linux
-          path: astronex-linux
-          retention-days: 30
+          targets: ${{ matrix.target }}
 
-  build-windows:
-    runs-on: windows-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: oven-sh/setup-bun@v2
+      - name: Cache cargo
+        uses: Swatinem/rust-cache@v2
         with:
-          bun-version: latest
-      - run: bun install
-      - run: bunx -y png-to-ico logo.png > logo.ico
-      - run: bun build index.js --compile --outfile astronex-windows.exe --windows-icon=logo.ico
+          key: ${{ matrix.target }}
+
+      - name: Build
+        run: cargo build --release --locked --target ${{ matrix.target }}
+
+      - name: Rename binary
+        shell: bash
+        run: |
+          mv target/${{ matrix.target }}/release/${{ matrix.binary }} ${{ matrix.artifact }}
+
       - uses: actions/upload-artifact@v4
         with:
-          name: astronex-windows
-          path: astronex-windows.exe
+          name: ${{ matrix.artifact }}
+          path: ${{ matrix.artifact }}
           retention-days: 30
 
   release:
-    needs: [build-macos, build-linux, build-windows]
+    needs: [build]
     if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
     permissions:
