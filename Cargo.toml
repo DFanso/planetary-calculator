@@ -4,6 +4,8 @@ version = "1.0.0"
 edition = "2021"
 description = "ASTRONEX — Planetary Weight & Age Calculator"
 authors = ["Leo Gavin"]
+license = "MIT"
+repository = "https://github.com/DFanso/planetary-calculator"
 
 [[bin]]
 name = "astronex"

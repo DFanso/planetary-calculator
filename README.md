@@ -21,6 +21,24 @@ Go to [Releases](https://github.com/DFanso/planetary-calculator/releases) to dow
 - `astronex-linux` - Linux executable
 - `astronex-windows.exe` - Windows executable
 
+### Windows SmartScreen warning
+
+Windows may show **"Windows protected your PC / Unknown publisher"** the first time you run
+`astronex-windows.exe`. This is expected for a small open-source app that isn't yet signed with a
+reputation-bearing certificate — it does not mean the file is unsafe. To run it:
+
+1. Click **More info**.
+2. Click **Run anyway**.
+
+You can also clear the flag yourself in PowerShell before running:
+
+```powershell
+Unblock-File .\astronex-windows.exe
+```
+
+> Code signing via the [SignPath Foundation](https://signpath.org/) free OSS program is being set up
+> to reduce this warning over time.
+
 ## Running from Source
 
 ### Prerequisites

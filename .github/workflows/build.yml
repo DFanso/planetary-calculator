@@ -16,6 +16,14 @@ jobs:
   build:
     name: Build (${{ matrix.name }})
     runs-on: ${{ matrix.os }}
+    permissions:
+      contents: read
+      actions: read
+      id-token: write # required by the SignPath GitHub connector (OIDC build verification)
+    env:
+      # Signing turns on automatically once the SIGNPATH_API_TOKEN secret is added.
+      # Until then SIGN == 'false' and every signing step below is skipped, so CI is unchanged.
+      SIGN: ${{ secrets.SIGNPATH_API_TOKEN != '' }}
     strategy:
       fail-fast: false
       matrix:
@@ -56,7 +64,47 @@ jobs:
         run: |
           mv target/${{ matrix.target }}/release/${{ matrix.binary }} ${{ matrix.artifact }}
 
-      - uses: actions/upload-artifact@v5
+      # --- Windows code signing via SignPath Foundation ---
+      # These three steps run ONLY for the Windows build and ONLY once SIGNPATH_API_TOKEN is set.
+      # Set up after SignPath Foundation approval:
+      #   - repo secret   SIGNPATH_API_TOKEN          (Settings > Secrets and variables > Actions)
+      #   - repo variable SIGNPATH_ORGANIZATION_ID    (Settings > Secrets and variables > Actions > Variables)
+      #   - in the SignPath portal, create a project / signing policy / artifact configuration whose
+      #     slugs match the three *-slug values below, then adjust them here if you named them differently.
+      - name: Upload unsigned Windows binary (for SignPath)
+        id: unsigned
+        if: matrix.name == 'windows' && env.SIGN == 'true'
+        uses: actions/upload-artifact@v5
+        with:
+          name: unsigned-windows # excluded from the release (release only globs astronex-*)
+          path: ${{ matrix.artifact }}
+          retention-days: 1
+
+      - name: Sign Windows binary (SignPath)
+        if: matrix.name == 'windows' && env.SIGN == 'true'
+        uses: signpath/github-action-submit-signing-request@v2
+        with:
+          api-token: ${{ secrets.SIGNPATH_API_TOKEN }}
+          organization-id: ${{ vars.SIGNPATH_ORGANIZATION_ID }}
+          project-slug: astronex
+          signing-policy-slug: release-signing
+          artifact-configuration-slug: windows-exe
+          github-artifact-id: ${{ steps.unsigned.outputs.artifact-id }}
+          wait-for-completion: true
+          output-artifact-directory: signed
+
+      - name: Upload signed Windows binary
+        if: matrix.name == 'windows' && env.SIGN == 'true'
+        uses: actions/upload-artifact@v5
+        with:
+          name: ${{ matrix.artifact }}
+          path: signed/${{ matrix.artifact }}
+          retention-days: 30
+
+      # Default upload: all platforms when signing is off; macOS/Linux always.
+      - name: Upload artifact
+        if: matrix.name != 'windows' || env.SIGN != 'true'
+        uses: actions/upload-artifact@v5
         with:
           name: ${{ matrix.artifact }}
           path: ${{ matrix.artifact }}
